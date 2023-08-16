@@ -6,55 +6,35 @@ from api.models import db, User
 from api.utils import generate_sitemap, APIException
 
 api = Blueprint('api', __name__)
-app = Flask ( __name__)
 
-@api.route('/hello', methods=['POST', 'GET'])
-def handle_hello():
-
-    response_body = {
-        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
-    }
-
-    return jsonify(response_body), 200
-
-@api.route('/signup', methods=['POST'])
-def user_signup():
-    user = User(
-        email=request.json.get("email", None),
-        password=request.json.get("password", None),
-        is_active=True
-    )
-    db.session.add(user)
-    db.session.commit()
-    response_body = {
-        "message": "User register Ok",
-        "id": user.id,
-        "email": user.email
-    }
-    return jsonify(response_body), 201
-
-@api.route("/login", methods=["POST"])
+@api.route("/token", methods=["POST"])
 def login():
-
     email = request.json.get("email", None)
     password = request.json.get("password", None)
-    user = User.query.filter_by(email=email, password=password).first()
+    if email != "test" or password != "test":
+        return jsonify({"msg": "Bad username or password"}), 401
 
-    if not user:
-        return jsonify({"msg": "Bad email or password"}), 401
-    
     access_token = create_access_token(identity=email)
-    return jsonify(access_token=access_token), 201
+    return jsonify(access_token=access_token)
+
+@api.route("/signup", methods=["POST"])
+def signup():
+    data = request.json
+    email = data.get("email")
+    password = data.get("password")
+
+    
+    if not email or not password:
+        raise APIException("Email and password are required fields.", status_code=400)
 
 
-@api.route("/private", methods=["GET"])
-@jwt_required()
-def protected():
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
+        raise APIException("User with this email already exists.", status_code=400)
 
-    # Access the identity of the current user with get_jwt_identity
-    current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
-    return jsonify(logged_in_as=current_user_id), 200
+    # Create a new user and save it to the database
+    new_user = User(email=email, password=password)
+    db.session.add(new_user)
+    db.session.commit()
 
-if __name__ == "__main__":
-    api.run()
+    return jsonify({"message": "User registered successfully."}), 201
