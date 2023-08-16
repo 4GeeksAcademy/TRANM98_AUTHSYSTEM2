@@ -1,42 +1,44 @@
-import React from "react";
-import { Container, Nav } from 'react-bootstrap';
-import Navbar from 'react-bootstrap/Navbar';
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
+import { Context } from "../store/appContext";
 
-export const CustomNavbar = () => {
-    return (
-        <div>
-            <Navbar bg="dark" variant="dark">
-                <Container>
-                    <Navbar.Brand href="#home">Navbar</Navbar.Brand>
-                    <Nav className="me-auto">
-                        <Nav.Link href="#home">Home</Nav.Link>
-                        <Nav.Link href="#features">Features</Nav.Link>
-                        <Nav.Link href="#pricing">Pricing</Nav.Link>
-                    </Nav>
-                </Container>
-            </Navbar>
-            <br />
-            <Navbar bg="primary" variant="dark">
-                <Container>
-                    <Navbar.Brand href="#home">Navbar</Navbar.Brand>
-                    <Nav className="me-auto">
-                        <Nav.Link href="#home">Home</Nav.Link>
-                        <Nav.Link href="#features">Features</Nav.Link>
-                        <Nav.Link href="#pricing">Pricing</Nav.Link>
-                    </Nav>
-                </Container>
-            </Navbar>
-            <br />
-            <Navbar bg="light" variant="light">
-                <Container>
-                    <Navbar.Brand href="#home">Navbar</Navbar.Brand>
-                    <Nav className="me-auto">
-                        <Nav.Link href="#home">Home</Nav.Link>
-                        <Nav.Link href="#features">Features</Nav.Link>
-                        <Nav.Link href="#pricing">Pricing</Nav.Link>
-                    </Nav>
-                </Container>
-            </Navbar>
+export const Navbar = () => {
+  const { store, actions } = useContext(Context);
+  return (
+    <nav className="navbar navbar-expand-lg navbar-light fixed-top">
+      <div className="container">
+        <Link className="navbar-brand" to={"/home"}>
+          Hi, I'm Nav
+        </Link>
+        <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
+          {!store.token ? (
+            <ul className="navbar-nav ml-auto">
+              <li className="nav-item">
+                <Link className="nav-link" to={"/signin"}>
+                  Sign In
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to={"/signup"}>
+                  Sign up
+                </Link>
+              </li>
+            </ul>
+          ) : (
+            <ul className="navbar-nav ml-auto">
+              <li className="nav-item">
+                <Link
+                  onClick={() => actions.logout()}
+                  className="nav-link"
+                  to={"#"}
+                >
+                  Logout
+                </Link>
+              </li>
+            </ul>
+          )}
         </div>
-    );
+      </div>
+    </nav>
+  );
 };

@@ -1,3 +1,16 @@
 /* 
     General Styles used on every website (Don't Repeat Yourself)
 */
+h1 {
+    color: rgb(255, 92, 119);
+}
+
+label {
+    color: rgb(253, 151, 202);
+
+}
+
+.btn {
+    color: white;
+    background-color: pink;
+}
